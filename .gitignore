@@ -1,0 +1,9 @@
+# Ignore node in client
+./client/node_modules
+./client/package-lock.json
+./client/package.json
+
+# Ignore node in server
+./server/node_modules
+./server/package-lock.json
+./server/package.json
