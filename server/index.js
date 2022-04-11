@@ -22,8 +22,7 @@ app.get('/', (req, res)=>{
     python.stdout.on('data', function (data) {
         console.log('Pipe data from python script ...');
         dataToSend = data.toString();
-    });
-    console.log( process.env.PATH );
+    });  
         
     python.stderr.on('data', (data) => {
         console.error('err: ', data.toString());
@@ -39,6 +38,12 @@ app.get('/', (req, res)=>{
         res.send(dataToSend)
     });
 });
+
+app.post('/', (req, res) => {
+    console.log(req);
+    console.log(req.body);
+    res.json(req.body);
+})
 
 app.get('/getMove', (req, res) => {
     res.send("finding optimal move using minimax algorithm with alpha-beta pruning...");

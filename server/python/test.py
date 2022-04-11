@@ -1,4 +1,3 @@
 import sys
 
-sys.stdout.write("Hello world");
-print("Hello World")
+sys.stdout.write("Hello world")

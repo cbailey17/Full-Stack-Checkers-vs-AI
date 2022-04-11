@@ -1,4 +1,6 @@
+#! /usr/bin/python3
 import time
+
 
 class Timer:
     """Timer class
@@ -7,6 +9,7 @@ class Timer:
       # figure out how long it takes to do stuff...
       elapsed_s = t.elapsed_s() OR elapsed_min = t.elapsed_min()
     """
+
     def __init__(self):
         "Timer - Start a timer"
         self.s_per_min = 60.0  # Number seconds per minute
@@ -21,4 +24,3 @@ class Timer:
 
         # Get elapsed seconds and convert to minutes
         return self.elapsed_s() / self.s_per_min
-

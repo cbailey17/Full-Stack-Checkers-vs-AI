@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 # io - Functions for input/output
 
 import os
@@ -7,11 +8,13 @@ import sys
 
 # Tested on Windows and Ubuntu 16.04
 
+
 def getchWindows():
     "getchWindows() - Return an unbuffered character"
     ch = msvcrt.getch()
     return ch.decode('utf-8')
-    
+
+
 def getchUnix():
     "getchUnix - Return an unbuffered character"
     try:
@@ -38,14 +41,15 @@ fd = sys.stdin.fileno()  # get stdin file descriptor handle
 mode = os.fstat(fd).st_mode
 if stat.S_ISCHR(mode):
     # chracter device
-    
+
     systype = platform.system()
     if systype == "Windows":
         import msvcrt
         getch = getchWindows
     elif systype == "Linux":
         # Get the current tty settings and save them
-        import tty, termios
+        import tty
+        import termios
         fd = sys.stdin.fileno()
         sanetty = termios.tcgetattr(fd)
         getch = getchUnix
@@ -53,6 +57,6 @@ if stat.S_ISCHR(mode):
         getch = getchBuffered
 else:
     getch = getchBuffered
-    
-    
+
+
 is_buffered = getch == getchBuffered

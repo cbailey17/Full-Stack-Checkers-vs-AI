@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar  4 13:42:32 2020
@@ -34,14 +35,16 @@ class Strategy(abstractstrategy.Strategy):
                 for j in range(8):
                     reds.append(board.get(i, j))
             close_to_king = reds.count('r')
-            u = (kings[0] + kings[0]) - (pawns[1] + kings[1])*500 + close_to_king*500
+            u = (kings[0] + kings[0]) - \
+                (pawns[1] + kings[1])*500 + close_to_king*500
         else:
             if self.maxplayer == 'b':
                 for i in range(5, 7):
                     for j in range(8):
                         blacks.append(board.get(i, j))
             close_to_king2 = blacks.count('b')
-            u = (pawns[1] + kings[1]) - (pawns[0] + kings[0])*500 + close_to_king2*500
+            u = (pawns[1] + kings[1]) - (pawns[0] +
+                                         kings[0])*500 + close_to_king2*500
         return u
 
     def alpha_beta(self, board, plies):
@@ -61,7 +64,8 @@ class Strategy(abstractstrategy.Strategy):
                 new_board = board.move(a)
                 minvalue = self._minvalue(new_board, alpha, beta, plies-1)
                 v = max(v, minvalue)
-                self.values.update({v: a})  # add utilties to a dictionary to keep track of actions and their utilities
+                # add utilties to a dictionary to keep track of actions and their utilities
+                self.values.update({v: a})
                 self.nboard.update({v: new_board})
                 if v >= beta:  # Check if utility is greater than beta for pruning
                     break
@@ -76,7 +80,8 @@ class Strategy(abstractstrategy.Strategy):
             v = self.utility(board)
         else:
             v = float("inf")
-            actions = board.get_actions(self.minplayer)  # get board actions of min player
+            # get board actions of min player
+            actions = board.get_actions(self.minplayer)
             for a in actions:  # loop through the actions and find action with min utility
                 new_board = board.move(a)
                 maxvalue = self._maxvalue(new_board, alpha, beta, plies-1)

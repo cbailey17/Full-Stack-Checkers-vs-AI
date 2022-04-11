@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "axios": "^0.26.1"
+  },
+  "name": "full-stack-checkers-vs-ai",
+  "description": "A full stack application in development consisting of a UI, built with vanilla Javascript HTML and CSS, a Node.js server and a python minimax algorithm with alpha beta pruning that will allow a human to play an AI",
+  "version": "1.0.0",
+  "main": "checkerboard.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cbailey17/Full-Stack-Checkers-vs-AI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cbailey17/Full-Stack-Checkers-vs-AI/issues"
+  },
+  "homepage": "https://github.com/cbailey17/Full-Stack-Checkers-vs-AI#readme"
+}
