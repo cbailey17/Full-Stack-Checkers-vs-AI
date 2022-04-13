@@ -1,4 +1,7 @@
 #! /usr/bin/python3
+"""
+@author: Cameron Bailey
+"""
 
 # Game representation and mechanics
 from __future__ import print_function
@@ -12,61 +15,79 @@ import human
 import sys
 
 
-def CheckersGame(red=ai.Strategy, black=human.Strategy,
-                 maxplies=2, init=None, verbose=True, firstmove=1):
-    """Game function for playing checkers"""
-    # Initialize variables and data structures
-    movenum, lastcap, pawn_move, count = 1, 0, 0, 0
-    movetimes = [[], []]
-    players = ['r', 'b']
-    # Define board and instances of the strategy and dictionarys for the players
+board = checkerboard.CheckerBoard()
+redplayer = ai.Strategy('r', board, maxplies=2)
+blackplayer = human.Strategy('b', board, maxplies=2)
+player_strategies = {'r': redplayer, 'b': blackplayer}
+strategies = {'r': "AI", 'b': "Human"}
+players = ['r', 'b']
+current_player = players[0]
+movenum, lastcap, pawn_move, count = 1, 0, 0, 0
+
+
+def checkTerminal():
+    terminal, winner = board.is_terminal()
+    if terminal:
+        gameover(winner)
+        return
+
+
+def makeHumanMove():
+    print("Changing state of board for humans move...")
+    current_player = players[1]
+    move = player_strategies.get(current_player).play(
+        board)  # get action from current player strategy
+    piece = board.get(move[1][0][0], move[1][0][1])
+
+    if board.ispawn(piece):
+        pawn_move = 0
+    else:
+        pawn_move += 1
+
+    action_str = board.get_action_str(move[1])
+    if len(action_str) > 23:  # Check if there is a capture
+        lastcap = 0
+    else:
+        lastcap += 1
+
+    board = board.move(move[1])
+    movenum += 1
+
+    print(board)
+
+
+def getAIMove():
+    """ Function made for a UI to play human vs AI"""
     board = checkerboard.CheckerBoard()
-    redplayer, blackplayer = red(
-        'r', board, maxplies),  black('b', board, maxplies)
+    redplayer = human.Strategy('r', board, maxplies=2)
+    blackplayer = ai.Strategy('b', board, maxplies=2)
     player_strategies = {'r': redplayer, 'b': blackplayer}
     strategies = {'r': "AI", 'b': "Human"}
+    players = ['r', 'b']
+    current_player = players[1]
+    movenum, lastcap, pawn_move, count = 1, 0, 0, 0
+    # makeHumanMove()
+    checkTerminal()
 
-    # Determine which player starts the game
-    current_player = players[firstmove]
+    move = player_strategies.get(current_player).play(
+        board)  # get action from current player strategy
+    piece = board.get(move[1][0][0], move[1][0][1])
 
-    tm = Timer()  # Timer for game in minutes
-    time_min = 0
-    finished = False
-    while not finished:  # While game is not finished keep looping
-        # Check if the game is over
-        terminal, winner = board.is_terminal()
-        if terminal:
-            gameover(movetimes, winner, time_min)
-            return
+    if board.ispawn(piece):
+        pawn_move = 0
+    else:
+        pawn_move += 1
 
-        t = Timer()  # Timer for player moves
-        move = player_strategies.get(current_player).play(
-            board)  # get action from current player strategy
-        piece = board.get(move[1][0][0], move[1][0][1])
-        # determine if the move is from a pawn
-        if board.ispawn(piece):
-            pawn_move = 0
-        else:
-            pawn_move += 1
+    # get action string then display data
+    action_str = board.get_action_str(move[1])
+    if len(action_str) > 23:  # Check if there is a capture
+        lastcap = 0
+    else:
+        lastcap += 1
 
-        # get action string then display data
-        action_str = board.get_action_str(move[1])
-        if len(action_str) > 23:  # Check if there is a capture
-            lastcap = 0
-        else:
-            lastcap += 1
-
-        board = board.move(move[1])
-
-        movenum += 1
-        ts = round(t.elapsed_s(), 2)
-        if current_player == players[0]:
-            movetimes[0].append(ts)
-        else:
-            movetimes[1].append(ts)
-        time_min = round(tm.elapsed_min(), 2)
-
-        current_player = board.other_player(current_player)
+    board = board.move(move[1])
+    movenum += 1
+    sys.stdout.write(action_str)
 
 
 def gameover(movetimes, winner, time_min):
@@ -83,4 +104,4 @@ if __name__ == "__main__":
     # Game(init=boardlibrary.boards["multihop"])
     # Game(init=boardlibrary.boards["StrategyTest1"])
     # Game(init=boardlibrary.boards["EndGame1"], firstmove = 1)
-    CheckersGame()
+    getAIMove()

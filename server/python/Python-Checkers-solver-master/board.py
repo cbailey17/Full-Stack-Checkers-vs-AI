@@ -1,4 +1,7 @@
 #! /usr/bin/python3
+"""
+@author: Cameron Bailey
+"""
 import math
 
 

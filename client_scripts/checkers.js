@@ -1,16 +1,43 @@
 /* Author: Cameron Bailey */
 
+arr = Array.of(Array.of(Array.from(Array(24), (elem, idx) => (idx % 2 == 0) ? '.' : 'r')));
+redcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
+
+arr = Array.of(Array.of(Array.from(Array(24), (elem, idx) => (idx % 2 == 0) ? '.' : 'b')));
+blackcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
+
+// var gameBoard = [
+//     [0, 1, 0, 1, 0, 1, 0, 1],
+//     [1, 0, 1, 0, 1, 0, 1, 0],
+//     [0, 1, 0, 1, 0, 1, 0, 1],
+//     [0, 0, 0, 0, 0, 0, 0, 0],
+//     [0, 0, 0, 0, 0, 0, 0, 0],
+//     [2, 0, 2, 0, 2, 0, 2, 0],
+//     [0, 2, 0, 2, 0, 2, 0, 2],
+//     [2, 0, 2, 0, 2, 0, 2, 0]
+//   ];
+
 var gameBoard = [
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 2, 0, 2, 0, 2, 0],
-    [0, 2, 0, 2, 0, 2, 0, 2],
-    [2, 0, 2, 0, 2, 0, 2, 0]
+    [0, {0:2}, 0, {1:2}, 0, {2:2}, 0, {3:2}],
+    [{4:2}, 0, {5:2}, 0, {6:2}, 0, {7:2}, 0],
+    [0, {8:2}, 0, {9:2}, 0, {10:2}, 0, {11:2}],
+    [{12:0}, 0, {13:0}, 0, {14:0}, 0, {15:0}, 0],
+    [0, {16:0}, 0, {17:0}, 0, {18:0}, 0, {19:0}],
+    [{20:1}, 0, {21:1}, 0, {22:1}, 0, {23:1}, 0],
+    [0, {24:1}, 0, {25:1}, 0, {26:1}, 0, {27:1}],
+    [{28:1}, 0, {29:1}, 0, {30:1}, 0, {31:1}, 0]
   ];
 
+// var gameBoard = [
+//     [0, 2, 0, 2, 0, 2, 0, 2],
+//     [2, 0, 2, 0, 2, 0, 2, 0],
+//     [0, 2, 0, 2, 0, 2, 0, 2],
+//     [0, 0, 0, 0, 0, 0, 0, 0],
+//     [0, 0, 0, 0, 0, 0, 0, 0],
+//     [1, 0, 1, 0, 1, 0, 1, 0],
+//     [0, 1, 0, 1, 0, 1, 0, 1],
+//     [1, 0, 1, 0, 1, 0, 1, 0]
+//   ];
 //arrays to store the instances
 var pieces = [];
 var tiles = [];
@@ -69,8 +96,10 @@ class Piece {
                     return false;
             }
             //remove the mark from Board.board and put it in the new spot
-            checkerBoard.gameBoard[this.position[0]][this.position[1]] = 0;
-            checkerBoard.gameBoard[tile.position[0]][tile.position[1]] = this.player;
+            // checkerBoard.gameBoard[this.position[0]][this.position[1]] = 0;
+            // checkerBoard.gameBoard[tile.position[0]][tile.position[1]] = this.player;
+            Object.values(checkerBoard.gameBoard[this.position[0]][this.position[1]])[0] = 0;
+            Object.values(checkerBoard.gameBoard[tile.position[0]][tile.position[1]])[0] = this.player;
             this.position = [tile.position[0], tile.position[1]];
             //change the css using board's dictionary
             this.element.css('top', checkerBoard.dictionary[this.position[0]]);
@@ -86,7 +115,8 @@ class Piece {
                 checkerBoard.score.player2 += 1;
             if (this.player == 2)
                 checkerBoard.score.player1 += 1;
-            checkerBoard.gameBoard[this.position[0]][this.position[1]] = 0;
+            // checkerBoard.gameBoard[this.position[0]][this.position[1]] = 0;
+            Object.values(checkerBoard.gameBoard[this.position[0]][this.position[1]])[0] = 0;
             this.position = [];
             var playerWon = checkerBoard.checkIfAnybodyWon();
             if (playerWon)
@@ -144,17 +174,6 @@ class Piece {
 }
 
 
-class AIObject {
-    constructor() {
-        this.playerNumber = 1;
-        this.getMove = async (action="none") =>{
-            const res = await axios.post('http://localhost:3000/', {
-                action_str: action
-              });
-        }
-    }
-}
-
 
 class Board {
     constructor(gameBoard, playerTurn, AI=false) {
@@ -164,14 +183,9 @@ class Board {
         this.tileElements = $('div.tiles');
         this.dictionary = ["0vmin", "10vmin", "20vmin", "30vmin", "40vmin", "50vmin", "60vmin", "70vmin", "80vmin", "90vmin"]; 
 
-        if (AI) {
+        if (AI) 
             this.ai = new AIObject();
-
-            if (playerTurn == this.ai.playerNumber) {
-                const initialCPMove = await this.ai.getMove();
-                console.log(initialCPMove);
-            }
-        }
+    
 
         this.initialize = () => {
             console.log("Initializing CheckerBoard....");
@@ -187,9 +201,9 @@ class Board {
                         if (column % 2 == 1)
                             countTiles = this.tileRender(row, column, countTiles)
                     }
-                if (this.gameBoard[row][column] == 1) 
+                if (Object.values(this.gameBoard[row][column])[0] == 1) 
                     countPieces = this.renderPieces(1, row, column, countPieces)
-                else if (this.gameBoard[row][column] == 2) 
+                else if (Object.values(this.gameBoard[row][column])[0] == 2) 
                     countPieces = this.renderPieces(2, row, column, countPieces)
                 }
             }
@@ -200,13 +214,17 @@ class Board {
             return countTiles + 1
         }
         this.renderPieces = (playerNumber, row, column, countPieces) => {
+            // if (playerNumber == 1) { color = red; }
+            // if (playerNumber == 0) { color = black; }
+
             $(`.player${playerNumber}pieces`).append("<div class='piece' id='" + countPieces + "' style='top:" + this.dictionary[row] + ";left:" + this.dictionary[column] + ";'></div>");
             pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)]);
             return countPieces + 1;
         }
         this.isValidPlaceToMove = (row, column) => {
             if (row < 0 || row > 7 || column < 0 || column > 7) return false;
-            if (this.gameBoard[row][column] == 0) {
+            console.log(this.gameBoard)
+            if (Object.values(this.gameBoard[row][column])[0] == 0) {
                 return true;
             }
             return false;
@@ -235,15 +253,61 @@ class Board {
     }     
 }
 
+class AIObject {
+    constructor() {
+        this.playerNumber = 1;
+        this.getMove = async (action="none") => {
+            const res = await axios.post('http://localhost:3000/', {
+                action_str: action
+              });
+              console.log(res);
+              return res;
+        }
+        this.getPiece = (move, checkerBoard) => {
+            const checkerPosition = [move[6], move[9]]
+
+            for (let piece of pieces) {
+                if (piece.position.toString() == checkerPosition.toString())
+                    return piece;
+            }
+            return {};
+        }
+        this.getTile = (move, checkerBoard) => {
+            const tileRow = move[16];
+            const tileColumn = move[19];
+            const tileID = Object.keys(checkerBoard.gameBoard[tileRow][tileColumn])[0];
+            const tileToMoveTo = $('#tile'+tileID);
+            return tileToMoveTo;
+        }
+        this.makeMove = (move, checkerBoard) => {
+            const checker_ = this.getPiece(move, checkerBoard);
+            const tile_ = this.getTile(move, checkerBoard);
+            const destinationTile = tiles[moveTile[0].id.replace(/tile/, '')];
+            computersPiece.move(destinationTile);
+        }
+    }
+}
+
 var checkerBoard = new Board(gameBoard, 1, true);
 checkerBoard.initialize();
-checkerBoard.getAndSetCPUMove();
+
+(async () => {
+    var ai = new AIObject();
+    const move = await ai.getMove();
+    const computersPiece = ai.getPiece(move.data, checkerBoard);
+    const moveTile = ai.getTile(move.data, checkerBoard);
+    const destinationTile = tiles[moveTile[0].id.replace(/tile/, '')];
+    computersPiece.move(destinationTile);
+})();
+
+
 
 
 // Handle events
 $('.piece').on("click", function () {
-    console.log("piece clicked");
-
+    console.log($(this).parent()[0].classList.contains('player2pieces'));
+    if ($(this).parent()[0].classList.contains('player2pieces'))
+        return;
     var selected;
     var isPlayersTurn = ($(this).parent().attr("class").split(' ')[0] == "player" + checkerBoard.playerTurn + "pieces");
     if (isPlayersTurn) {
@@ -266,6 +330,7 @@ $('.tile').on("click", function () {
         var tileId = $(this).attr("id").replace(/tile/, '');
         var tile = tiles[tileId];
         var pieceSelected = pieces[$('.selected').attr("id")];
+        var originalPosition = pieceSelected.position;
    
         var possibleMove = tile.inRange(pieceSelected);
         if (possibleMove != 'wrong') {
@@ -287,6 +352,10 @@ $('.tile').on("click", function () {
             }
         }
     }
+    console.log(pieceSelected.position)
+    let action_str = `from (${originalPosition[0]+', '+originalPosition[1]}) to (${pieceSelected.position[0]+', '+pieceSelected.position[1]})`;
+    console.log(action_str);
+    //checkerBoard.ai.getMove();
 });
 
 
