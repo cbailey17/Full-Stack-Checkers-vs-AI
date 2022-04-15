@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "animejs": "^3.2.1",
     "axios": "^0.26.1"
@@ -8,7 +9,7 @@
   "version": "1.0.0",
   "main": "checkerboard.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --env=jsdom"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/cbailey17/Full-Stack-Checkers-vs-AI/issues"
   },
-  "homepage": "https://github.com/cbailey17/Full-Stack-Checkers-vs-AI#readme"
+  "homepage": "https://github.com/cbailey17/Full-Stack-Checkers-vs-AI#readme",
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
 }

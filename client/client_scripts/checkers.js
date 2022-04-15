@@ -1,6 +1,7 @@
 /* Author: Cameron Bailey */
 
-// import { default as axios } from "axios";
+const $ = require('jquery');
+
 
 arr = Array.of(Array.of(Array.from(Array(24), (elem, idx) => (idx % 2 == 0) ? '.' : 'r')));
 redcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
@@ -8,26 +9,7 @@ redcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
 arr = Array.of(Array.of(Array.from(Array(24), (elem, idx) => (idx % 2 == 0) ? '.' : 'b')));
 blackcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
 
-// var gameBoard = [
-//     [0, 1, 0, 1, 0, 1, 0, 1],
-//     [1, 0, 1, 0, 1, 0, 1, 0],
-//     [0, 1, 0, 1, 0, 1, 0, 1],
-//     [0, 0, 0, 0, 0, 0, 0, 0],
-//     [0, 0, 0, 0, 0, 0, 0, 0],
-//     [2, 0, 2, 0, 2, 0, 2, 0],
-//     [0, 2, 0, 2, 0, 2, 0, 2],
-//     [2, 0, 2, 0, 2, 0, 2, 0]
-//   ];
 
-// var gameBoard = [
-//     [{0:0}, {0:2}, {0:0}, {1:2}, {0:0}, {2:2}, {0:0}, {3:2}],
-//     [{4:2}, {0:0}, {5:2}, {0:0}, {6:2}, {0:0}, {7:2}, {0:0}],
-//     [{0:0}, {8:2}, {0:0}, {9:2}, {0:0}, {10:2}, {0:0}, {11:2}],
-//     [{12:0}, {0:0}, {13:0}, {0:0}, {14:0}, {0:0}, {15:0}, {0:0}],
-//     [{0:0}, {16:0}, {0:0}, {17:0}, {0:0}, {18:0}, {0:0}, {19:0}],
-//     [{20:1}, {0:0}, {21:1}, {0:0}, {22:1}, {0:0}, {23:1}, {0:0}],
-//     [{0:0}, {24:1}, {0:0}, {25:1}, {0:0}, {26:1}, {0:0}, {27:1}],
-//     [{28:1}, {0:0}, {29:1}, {0:0}, {30:1}, {0:0}, {31:1}, {0:0}]
 //   ];
 var gameBoard = [
     [{0:'.'}, {0:2}, {0:0}, {1:2}, {0:'.'}, {2:2}, {0:'.'}, {3:2}],
@@ -41,16 +23,6 @@ var gameBoard = [
   ];
 
 
-// var gameBoard = [
-//     [0, 2, 0, 2, 0, 2, 0, 2],
-//     [2, 0, 2, 0, 2, 0, 2, 0],
-//     [0, 2, 0, 2, 0, 2, 0, 2],
-//     [0, 0, 0, 0, 0, 0, 0, 0],
-//     [0, 0, 0, 0, 0, 0, 0, 0],
-//     [1, 0, 1, 0, 1, 0, 1, 0],
-//     [0, 1, 0, 1, 0, 1, 0, 1],
-//     [1, 0, 1, 0, 1, 0, 1, 0]
-//   ];
 //arrays to store the instances
 var pieces = [];
 var tiles = [];
@@ -129,6 +101,7 @@ class Piece {
             //if piece reaches the end of the row on opposite side crown it a king (can move all directions)
             if (!this.king && (this.position[0] == 0 || this.position[0] == 7))
                 this.makeKing();
+
             return true;
         }; 
         this.remove = () => {
@@ -240,6 +213,9 @@ class Board {
             pieces[countPieces] = new Piece($("#" + countPieces), [parseInt(row), parseInt(column)]);
             return countPieces + 1;
         }
+        this.returnPieces = () => {
+            return {"tiles": tiles, "pieces": pieces};
+        }
         this.isValidPlaceToMove = (row, column) => {
             if (row < 0 || row > 7 || column < 0 || column > 7) return false;
             if (Object.values(this.gameBoard[row][column])[0] == '.') {
@@ -252,6 +228,8 @@ class Board {
                 this.playerTurn = 2;
             else 
                 this.playerTurn = 1;
+
+            return this.playerTurn;
         }
         this.checkIfAnybodyWon = () => {
             if (this.score.player1 == 12) 
@@ -351,8 +329,9 @@ class AIObject {
 }
 var checkerBoard = new Board(gameBoard, 1, true);
 checkerBoard.initialize();
+module.exports = checkerBoard;
 
-document.querySelector('.start').addEventListener('click', async () => {
+$('.start').on('click', async () => {
     checkerBoard.ai.initBackEndState();
 });
 
