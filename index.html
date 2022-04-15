@@ -6,12 +6,19 @@
         <title>Checkerboard</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="client_styles/checkers.css">
+        <link rel="stylesheet" href="client/client_styles/checkers.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="shortcut icon" href="#">
     </head>
     <body>
-        <main>
+        <div class="column">
+            <div id="scoreboard">
+                <h1>Checkers vs. AI</h1>
+                <button class="start">Start</button>
+                <button class="reset">Reset</button>
+            </div>
+        </div>
+        <div class="column" id="checkerBoard">
             <div id="board">
                 <div class="tiles"></div>
                 <div class="pieces">
@@ -19,9 +26,9 @@
                   <div class="player2pieces"></div>
                 </div>
             </div>
-        </main>
+        </div>
 
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script src="client_scripts/checkers.js" async defer></script>
+        <script src="client/client_scripts/checkers.js" async defer></script>
     </body>
 </html>

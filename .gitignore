@@ -7,3 +7,8 @@
 ./server/node_modules
 ./server/package-lock.json
 ./server/package.json
+
+# Environment variables and launch configuration
+.vscode
+.env
+.devcontainer

@@ -1,9 +1,4 @@
 #! /usr/bin/python3
-'''
-Created on Mar 1, 2015
-
-@author: mroch
-'''
 
 import platform   # operating system platform
 
@@ -11,6 +6,7 @@ import checkerboard
 import charIO  # character IO
 
 import abstractstrategy
+import redis
 
 
 class Strategy(abstractstrategy.Strategy):
@@ -58,10 +54,7 @@ class Strategy(abstractstrategy.Strategy):
                     choice)-letter_a] if choice != forfeit else None
 
             else:
-                raise NotImplementedError(" ".join([
-                    "Write an input routine/GUI if you have too much",
-                    "time on your hands.  Be sure to verify that the",
-                    "resulting action is in the list of actions"]))
+                """UI Implementaion"""
 
         else:
             action = []  # No possible actions

@@ -13,38 +13,73 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
  extended: true})); 
 app.use(cors());
 
+app.post('/initializeBoard', (req, res) => {
+    const python = spawn('python3', ['./python/Python-Checkers-solver-master/boardinit.py']);
 
-app.post('/', (req, res) => {
-
-    console.log(req.body);
-
-    var dataToSend;
-    // spawn new child process to call the python script
-    const python = spawn('python3', ['./python/Python-Checkers-solver-master/uiCheckers.py', req.body]);
-    // collect data from script
     python.stdout.on('data', function (data) {
-        console.log('Pipe data from python script ...');
-        console.log(data.toString());
+        console.log('Initializing Board...');
         dataToSend = data.toString();
     });  
-        
     python.stderr.on('data', (data) => {
         console.error('err: ', data.toString());
     });
-    
     python.on('error', (error) => {
         console.error('error: ', error.message);
     });
-    // in close event we are sure that stream from child process is closed
     python.on('close', (code) => {
         console.log(`child process close all stdio with code ${code}`);
-        // send data to browser
         res.send(dataToSend)
     });
 });
 
 
-//Start your server on a specified port
+app.post('/', (req, res) => {
+    var dataToSend;
+    console.log("Humans move");
+    console.log(req.body.action_str);
+    console.log("*******************");
+
+    const python = spawn('python3', ['./python/Python-Checkers-solver-master/uiCheckers.py', req.body.action_str]);
+
+    python.stdout.on('data', function (data) {
+        console.log('Getting AI move.....');
+        dataToSend = data.toString();
+        console.log("computers move");
+        console.log(dataToSend);
+    });  
+    python.stderr.on('data', (data) => {
+        console.error('err: ', data.toString());
+    });
+    python.on('error', (error) => {
+        console.error('error: ', error.message);
+    });
+    python.on('close', (code) => {
+        console.log(`child process close all stdio with code ${code}`);
+        res.send(dataToSend)
+    });
+});
+
+app.post('/clearGameCache', (req, res) => {
+    var dataToSend;
+    const python = spawn('python3', ['./python/Python-Checkers-solver-master/clearCache.py']);
+
+    python.stdout.on('data', function (data) {
+        console.log('Clearing cache......');
+        dataToSend = data.toString();
+    });  
+    python.stderr.on('data', (data) => {
+        console.error('err: ', data.toString());
+    });
+    python.on('error', (error) => {
+        console.error('error: ', error.message);
+    });
+    python.on('close', (code) => {
+        console.log(`child process close all stdio with code ${code}`);
+        res.send(dataToSend)
+    });
+});
+
+
 app.listen(port, ()=>{
     console.group(`Server is running on port ${port}......`)
     console.log("Try your hand at playing my AI algorithm in checkers!");
