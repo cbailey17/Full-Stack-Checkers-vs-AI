@@ -1,8 +1,10 @@
 {
   "type": "module",
   "dependencies": {
+    "anime": "^0.1.2",
     "animejs": "^3.2.1",
-    "axios": "^0.26.1"
+    "axios": "^0.26.1",
+    "express": "^4.17.3"
   },
   "name": "full-stack-checkers-vs-ai",
   "description": "A full stack application in development consisting of a UI, built with vanilla Javascript HTML and CSS, a Node.js server and a python minimax algorithm with alpha beta pruning that will allow a human to play an AI",

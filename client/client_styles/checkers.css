@@ -8,9 +8,10 @@ html, body {
     margin: 0;
     padding: 0;
     color: #9e4f4f;
+    background-color: #18212d;
     font-family: "Lato", Calibri, sans-serif;
-    font-size: 16px;
-    background-color: #384a7a57; }
+    font-size: 16px; }
+    /* background-color: #384a7a57; } */
     h1 {
       position: absolute;
       left: 18vmin; }
@@ -39,6 +40,11 @@ html, body {
       -o-transform: rotateZ(180deg);
 } */
   /* }  */
+  #checkers {
+    position: relative;
+    left: 23%;
+    top:4%
+  }
 
   div.column {
   position: relative;
@@ -46,7 +52,8 @@ html, body {
   overflow: auto;
   height: 100%;
   min-height: 100%;
-  width: 50%;
+  background-color: #18212d;
+  width: 100%;
   animation: spin 10s linear infinite;
   -webkit-animation: spin 10s linear infinite;
 }
@@ -84,6 +91,7 @@ html, body {
     height: 80vmin;
     border-radius: 5px;
     box-shadow: 1px 1px 3px #232621;
+    /* box-shadow: 0 0 10px 5px #FF3131; */
     background-color: #B93848;
     overflow: hidden; }
     div#board .tile {

@@ -1,8 +1,5 @@
 /* Author: Cameron Bailey */
 
-const $ = require('jquery');
-
-
 arr = Array.of(Array.of(Array.from(Array(24), (elem, idx) => (idx % 2 == 0) ? '.' : 'r')));
 redcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
 
@@ -22,6 +19,26 @@ var gameBoard = [
     [{28:1}, {0:'.'}, {29:1}, {0:'.'}, {30:1}, {0:'.'}, {31:1}, {0:'.'}]
   ];
 
+anime({
+    targets: '#path',
+    strokeDashoffset: [anime.setDashoffset, 0],
+    easing: 'easeInOutSine',
+    duration: 6000,
+    delay: function(el, i) { return i * 250 },
+    direction: 'alternate',
+    loop: true
+});
+
+var  animateMove = (piece) => {
+    anime({
+        targets: piece,
+        scale: 1.4,
+        direction: 'alternate',
+        duration: 60
+    })
+}
+
+
 
 //arrays to store the instances
 var pieces = [];
@@ -31,9 +48,10 @@ var tiles = [];
 var dist = (x1, y1, x2, y2) => Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
 
 class Tile {
-    constructor(element, position) {
+    constructor(element, position, piece=null) {
         this.element = element;
         this.position = position;
+        this.piece = piece; // use this
 
         this.inRange = (piece) => {
             for (let k of pieces)
@@ -61,9 +79,9 @@ class Piece {
 
         if (this.element.attr("id") < 12) {
             this.player = 2;
-            this.element.css("backgroundImage", "url('../img/ai.png')");
+            this.element.css("backgroundImage", "url('./img/ai.png')");
         }
-        else 
+        else
             this.player = 1;
 
         this.makeKing = () => {
@@ -91,7 +109,7 @@ class Piece {
             Object.keys(checkerBoard.gameBoard[tile.position[0]][tile.position[1]]).forEach((key, index) => {
                 checkerBoard.gameBoard[tile.position[0]][tile.position[1]][key] = this.player;
             });
-         
+
 
 
             this.position = [tile.position[0], tile.position[1]];
@@ -103,7 +121,7 @@ class Piece {
                 this.makeKing();
 
             return true;
-        }; 
+        };
         this.remove = () => {
             this.element.css("display", "none");
             if (this.player == 1)
@@ -134,6 +152,8 @@ class Piece {
 
             var tileToCheckx = this.position[1] + dx / 2;
             var tileToChecky = this.position[0] + dy / 2;
+            // var tileToChecky = this.position[1] + dx / 2;
+            // var tileToCheckx = this.position[0] + dy / 2;
 
             if (tileToCheckx > 7 || tileToChecky > 7 || tileToCheckx < 0 || tileToChecky < 0)
                 return false;
@@ -179,26 +199,26 @@ class Board {
         this.tileElements = $('div.tiles');
         this.dictionary = ["0vmin", "10vmin", "20vmin", "30vmin", "40vmin", "50vmin", "60vmin", "70vmin", "80vmin", "90vmin"]; 
 
-        if (AI) 
+        if (AI)
             this.ai = new AIObject();
 
         this.initialize = () => {
             console.log("Initializing CheckerBoard....");
             var countPieces = 0;
             var countTiles = 0;
-            
-            for (let row in this.gameBoard) { 
+
+            for (let row in this.gameBoard) {
                 for (let column in this.gameBoard[row]) {
-                    if (row % 2 == 1) { // row is odd 
+                    if (row % 2 == 1) { // row is odd
                         if (column % 2 == 0) // column even
                             countTiles = this.tileRender(row, column, countTiles)
                     } else {
                         if (column % 2 == 1)
                             countTiles = this.tileRender(row, column, countTiles)
                     }
-                if (Object.values(this.gameBoard[row][column])[0] == 1) 
+                if (Object.values(this.gameBoard[row][column])[0] == 1)
                     countPieces = this.renderPieces(1, row, column, countPieces)
-                else if (Object.values(this.gameBoard[row][column])[0] == 2) 
+                else if (Object.values(this.gameBoard[row][column])[0] == 2)
                     countPieces = this.renderPieces(2, row, column, countPieces)
                 }
             }
@@ -224,19 +244,19 @@ class Board {
             return false;
         }
         this.changePlayerTurn = () => {
-            if (this.playerTurn == 1) 
+            if (this.playerTurn == 1)
                 this.playerTurn = 2;
-            else 
+            else
                 this.playerTurn = 1;
 
             return this.playerTurn;
         }
         this.checkIfAnybodyWon = () => {
-            if (this.score.player1 == 12) 
+            if (this.score.player1 == 12)
                 return 1;
-            else if (this.score.player2 == 12) 
+            else if (this.score.player2 == 12)
             return 2;
-            
+
             return false;
         }
         //reset the game
@@ -247,7 +267,7 @@ class Board {
             this.jumpExists = false;
         }
         this.visualizeString = (str) => {
-            var vis = "  0 1 2 3 4 5 6 7 \n" 
+            var vis = "  0 1 2 3 4 5 6 7 \n"
                   + "0 " + str[0] + ' '+ str[1] + ' ' + str[2] +  ' ' + str[3] + ' ' + str[4] +  ' ' +  str[5] +  ' ' + str[6] +  ' ' +  str[7] +  ' ' +  '\n'
                   + "1 " + str[8] +  ' ' +  str[9] +  ' ' + str[10] +  ' ' +  str[11] +  ' ' +  str[12] +  ' ' +  str[13] +  ' ' +  str[14] +  ' ' +  str[15] + '\n'
                   + "2 " + str[16] +  ' ' +  str[17] +  ' ' + str[18] +  ' ' +  str[19] +  ' ' +  str[20] +  ' ' +  str[21] +  ' ' +  str[22] +  ' ' +  str[23] + '\n'
@@ -305,7 +325,6 @@ class AIObject {
         this.getPiece = (move, checkerBoard) => {
             const checkerPosition = [move[6], move[9]]
 
-            console.log(pieces);
             for (let piece of pieces) {
                 if (piece.position.toString() == checkerPosition.toString())
                     return piece;
@@ -329,7 +348,7 @@ class AIObject {
 }
 var checkerBoard = new Board(gameBoard, 1, true);
 checkerBoard.initialize();
-module.exports = checkerBoard;
+// module.exports = checkerBoard;
 
 $('.start').on('click', async () => {
     checkerBoard.ai.initBackEndState();
@@ -367,7 +386,6 @@ $('.piece').on("click", function () {
 $('.tile').on("click", async (elem) => {
     if ($('.selected').length != 0) {
         let str = checkerBoard.boardToString();
-        console.log(checkerBoard.visualizeString(str));
 
         var tileId = elem.currentTarget.id.replace(/tile/, '');
         var tile = tiles[tileId];
@@ -392,6 +410,7 @@ $('.tile').on("click", async (elem) => {
             } else if (possibleMove == 'regular' && !checkerBoard.jumpExists) {
                 if (!pieceSelected.canJumpAny()) {
                     pieceSelected.move(tile);
+                    animateMove(pieceSelected.element[0]);
                     successfulMove = true;
 
                     Object.keys(gameBoard[tile.position[0]][tile.position[1]]).forEach((key, index) => {
@@ -408,26 +427,48 @@ $('.tile').on("click", async (elem) => {
     }
 
     if (successfulMove) {
-        let action_str = `from (${originalPosition[0]+', '+originalPosition[1]}) to (${pieceSelected.position[0]+', '+pieceSelected.position[1]})`;
-        console.log(action_str);
-    
+        let action_str;
+        // if (originalPosition[0] - pieceSelected.position[0] > 1)
+        //     action_str = `from (${originalPosition[0]+', '+originalPosition[1]}) to (${pieceSelected.position[0]+', '+pieceSelected.position[1]}) capturing ()`;
+        // else
+        action_str = `from (${originalPosition[0]+', '+originalPosition[1]}) to (${pieceSelected.position[0]+', '+pieceSelected.position[1]})`;
+
         const nextMove = await checkerBoard.ai.getMove(action_str);
         const computersPiece = checkerBoard.ai.getPiece(nextMove.data, checkerBoard);
-        const moveTile = checkerBoard.ai.getTile(nextMove.data, checkerBoard);
-        const destinationTile = tiles[moveTile[0].id.replace(/tile/, '')];
-        console.log(destinationTile);
-    
+        const tileElement = checkerBoard.ai.getTile(nextMove.data, checkerBoard);
+        const destinationTile = tiles[tileElement[0].id.replace(/tile/, '')];
+        let capturedPiece;
+
+        console.log(nextMove);
+
         Object.keys(gameBoard[computersPiece.position[0]][computersPiece.position[1]]).forEach((key, index) => {
             gameBoard[computersPiece.position[0]][computersPiece.position[1]][key] = '.';
         });
         computersPiece.move(destinationTile);
+        animateMove(computersPiece.element[0]);
+
         Object.keys(gameBoard[computersPiece.position[0]][computersPiece.position[1]]).forEach((key, index) => {
-            console.log(checkerBoard.playerTurn)
             if (checkerBoard.playerTurn == 1)
                 gameBoard[computersPiece.position[0]][computersPiece.position[1]][key] = 1;
             else
-                gameBoard[computersPiece.position[0]][computersPiece.position[1]][key] = 2; 
+                gameBoard[computersPiece.position[0]][computersPiece.position[1]][key] = 2;
         });
+        let capture_bool = nextMove.data.length > 21;
+        if (capture_bool) {
+            let row = nextMove.data[33];
+            let col = nextMove.data[36];
+            capturedPiece = [row,col];
+            console.log(capturedPiece);
+            for (let piece of pieces) {
+                if (piece.position.toString() == capturedPiece.toString()) {
+                    console.log(piece);
+                    Object.keys(gameBoard[piece.position[0]][piece.position[1]]).forEach((key, index) => {
+                        gameBoard[piece.position[0]][piece.position[1]][key] = '.';
+                    });
+                    piece.remove();
+                }
+            }
+        }
         checkerBoard.changePlayerTurn();
         console.log(checkerBoard);
         console.log(checkerBoard.visualizeString(checkerBoard.boardToString()))

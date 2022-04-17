@@ -13,3 +13,4 @@
 .env
 .devcontainer
 node_modules
+.venv

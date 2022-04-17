@@ -4,8 +4,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const port = 3000
-var action_str;
-
+var path = require('path')
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 
@@ -35,17 +34,17 @@ app.post('/initializeBoard', (req, res) => {
 
 app.post('/', (req, res) => {
     var dataToSend;
-    console.log("Humans move");
-    console.log(req.body.action_str);
-    console.log("*******************");
+    // console.log("Humans move");
+    // console.log(req.body.action_str);
+    // console.log("*******************");
 
     const python = spawn('python3', ['./python/Python-Checkers-solver-master/uiCheckers.py', req.body.action_str]);
 
     python.stdout.on('data', function (data) {
         console.log('Getting AI move.....');
         dataToSend = data.toString();
-        console.log("computers move");
-        console.log(dataToSend);
+        // console.log("computers move");
+        // console.log(dataToSend);
     });  
     python.stderr.on('data', (data) => {
         console.error('err: ', data.toString());
@@ -84,5 +83,5 @@ app.listen(port, ()=>{
     console.group(`Server is running on port ${port}......`)
     console.log("Try your hand at playing my AI algorithm in checkers!");
     console.log("Author: Alex Cameron Bailey");
-    console.groupEnd("-----------------------------------------------");
+    console.groupEnd()
 });

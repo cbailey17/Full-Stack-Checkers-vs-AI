@@ -40,5 +40,4 @@ class Strategy:
         determined via a game tree search (e.g. minimax with alpha-beta
         pruning).
         """
-
         raise NotImplementedError("Subclass must implement")

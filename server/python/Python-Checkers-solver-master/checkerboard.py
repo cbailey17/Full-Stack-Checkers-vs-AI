@@ -161,7 +161,7 @@ class CheckerBoard(Board):
 
     def __init__(self):
         "CheckerBoard - Create a new checkerboard"
-
+        self.listpositions = [];
         # Create the board
         self.edgesize = 8  # Number of squares per edge
         # Checkers only move on the dark squares, so game space
@@ -222,6 +222,26 @@ class CheckerBoard(Board):
         self.drawthreshN = 40
         self.lastcapture = 0  # move # of last capture
         self.lastpawnadvance = 0  # move number of last pawn advance
+
+    def isHumanCapture(self, move):
+        return int(move[0]) - int(move[2]) > 1
+
+    def findListPositions(self):
+        piece = 0
+
+        for row in range(8):
+            for col in range(8):
+                if self.board[row][col] == ['']:
+                    continue
+                elif self.board[row][col] == None:
+                    item = "."
+                else:
+                    item = self.board[row][col]
+                self.listpositions.append(item)
+                piece += 1
+        print((len(self.listpositions)))
+        print(((self.listpositions)))
+        return "".join(self.listpositions)
 
     def disttoking(self, player, row):
         "disttoking - how many rows from king position for player given row"
