@@ -21,7 +21,6 @@ redis_client = redis.Redis(host='localhost',
                            port=6379,
                            db=0)
 
-
 def checkTerminal(board):
     terminal, winner = board.is_terminal()
     if terminal:
@@ -141,9 +140,9 @@ def getAIMove():
     logging.warning("Current board in getAIMove() after humans and AI move: ", board)
     # logging.warning("board state object: ", boardState)
     # logging.warning("Humans move sent to server: ", sys.argv[1])
-    logging.warning("last capture: ", lastcap)
-    logging.warning("move number: ", movenum)
-    logging.warning("Current player: ", current_player)
+    # logging.warning("last capture: ", lastcap)
+    # logging.warning("move number: ", movenum)
+    # logging.warning("Current player: ", current_player)
     # logging.warning("newBoardState", newBoardState)
     logging.warning("move", move)
     # logging.warning("board string", board.findListPositions())

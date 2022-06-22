@@ -1,4 +1,25 @@
-
+#Layer_1 {
+  height: 250px;
+  width: auto;
+  position: relative;
+  left: 33%;
+  top: -120px;;
+}
+#header {
+  background-color: black;
+  position: relative;
+  height: 50vmin;
+  width: auto;
+  border-bottom-left-radius: 10%;
+  border-bottom-right-radius: 10%;
+}
+#minimax {
+  position: relative;
+  top: 15vmin;
+  color: white;
+  margin: 50px 300px;
+  z-index: 999;
+}
 html, body {
     position: absolute;
     top: 0;
@@ -45,6 +66,14 @@ html, body {
     left: 23%;
     top:4%
   }
+  body:not(.iOS) #lines * {
+    mix-blend-mode: lighten;
+  }
+  
+  #fills * {
+    opacity: 0;
+    mix-blend-mode: lighten;
+  }
 
   div.column {
   position: relative;
@@ -64,7 +93,9 @@ html, body {
       overflow: hidden;
       height: auto; }
     }
-    
+    #cam {
+      position: sticky;
+    }
   div#scoreboard {
     position: absolute;
     top: calc(50% - 40vmin);
@@ -134,3 +165,10 @@ html, body {
       border: 1vmin solid #010175; }
       div#board .player2pieces .piece.selected {
         box-shadow: 0 0 10px 5px #47d63a;  }
+        body:not(.iOS) #lines * {
+          mix-blend-mode: lighten;
+        }
+        
+        #fills * {
+          mix-blend-mode: lighten;
+        }

@@ -1,15 +1,13 @@
 /* Author: Cameron Bailey */
 
-arr = Array.of(Array.of(Array.from(Array(24), (elem, idx) => (idx % 2 == 0) ? '.' : 'r')));
-redcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
+var iOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+console.log(iOS);
+var ff = navigator.userAgent.indexOf('Firefox') > 0;
+var tap = ('ontouchstart' in window || navigator.msMaxTouchPoints) ? 'touchstart' : 'mousedown';
+if (iOS) document.body.classList.add('iOS');
 
-arr = Array.of(Array.of(Array.from(Array(24), (elem, idx) => (idx % 2 == 0) ? '.' : 'b')));
-blackcontainer = [arr[0].slice(0,8), arr[0].slice(9,16), arr[0].slice(17,24)];
-
-
-//   ];
 var gameBoard = [
-    [{0:'.'}, {0:2}, {0:0}, {1:2}, {0:'.'}, {2:2}, {0:'.'}, {3:2}],
+    [{0:'.'}, {0:2}, {0:'.'}, {1:2}, {0:'.'}, {2:2}, {0:'.'}, {3:2}],
     [{4:2}, {0:'.'}, {5:2}, {0:'.'}, {6:2}, {0:'.'}, {7:2}, {0:'.'}],
     [{0:'.'}, {8:2}, {0:'.'}, {9:2}, {0:'.'}, {10:2}, {0:'.'}, {11:2}],
     [{12:'.'}, {0:'.'}, {13:'.'}, {0:'.'}, {14:'.'}, {0:'.'}, {15:'.'}, {0:'.'}],
@@ -19,15 +17,107 @@ var gameBoard = [
     [{28:1}, {0:'.'}, {29:1}, {0:'.'}, {30:1}, {0:'.'}, {31:1}, {0:'.'}]
   ];
 
-anime({
-    targets: '#path',
-    strokeDashoffset: [anime.setDashoffset, 0],
-    easing: 'easeInOutSine',
-    duration: 6000,
-    delay: function(el, i) { return i * 250 },
-    direction: 'alternate',
-    loop: true
-});
+
+var logoAnimation = () => {
+    var setDashoffset = function(el) {
+        var l = el.getTotalLength();
+        el.setAttribute('stroke-dasharray', l);
+        return [l,0];
+  }
+    var letters = anime({
+        targets: '#lines path',
+        strokeDashoffset: {
+            value: setDashoffset,
+            duration: 700,
+            easing: 'easeOutQuad'
+        },
+        transform: ['translate(0 128)', 'translate(0 0)'],
+        delay: function(el, i) {
+            return 750 + (i * 120)
+        },
+        duration: 1400
+    });
+
+    var dotJSRoll = anime({
+        targets: '#dot',
+        transform: ['translate(0 0)', 'translate(1000 0)'],
+        delay: letters.duration - 800,
+        duration: 800,
+        elasticity: 300
+    });
+
+    var dotJSDown = anime({
+        targets: '#dot',
+        transform: ['translate(0 -304)', 'translate(0 0)'],
+        duration: 500,
+        elasticity: 600,
+        autoplay: false
+  });
+
+  var dotJSUp = anime({
+        targets: '#dot',
+        transform: ['translate(0 0) scale(1 3)', 'translate(0 -352) scale(1 1)'],
+        duration: 800,
+        easing: 'easeOutCirc',
+        complete: dotJSDown.play
+  });
+  var gradients = anime({
+        targets: '#fills path',
+        opacity: [0, 1],
+        delay: letters.duration - 300,
+        delay: function(el, i, l) {
+        var mid = l/2;
+        var index = (i - mid) > mid ? 0 : i;
+        var delay = Math.abs(index - mid);
+        return (letters.duration - 1300) + (delay * 30);
+    },
+    duration: 500,
+    easing: 'linear'
+  });
+}
+
+var checkersAnimation = () => {
+    var setDashoffset = function(el) {
+        var l = el.getTotalLength();
+        el.setAttribute('stroke-dasharray', l);
+        return [l,0];
+  }
+    var letters2 = anime({
+        targets: '#lines2 path',
+        strokeDashoffset: {
+            value: setDashoffset,
+            duration: 700,
+            easing: 'easeOutQuad'
+        },
+        transform: ['translate(0 128)', 'translate(0 0)'],
+        delay: function(el, i) {
+            return 750 + (i * 120)
+        },
+        duration: 1400
+    });
+    // var eRoll = anime({
+    //     targets: '#first_e',
+    //     rotateZ: 180,
+    //     delay: letters2.duration - 300,
+    //     duration: 8000,
+    //     elasticity: 300
+    // });
+    // var eRoll = anime({
+    //     targets: '.ee',
+    //     transform: ['translate(0 0)', 'translate(350 0)'],
+    //     delay: letters2.duration - 600,
+    //     duration: 800,
+    //     elasticity: 300
+    // });
+    var dotJSRoll = anime({
+        targets: '#cube path, rect.st1',
+        transform: ['translate(0 0)', 'translate(1250 0)'],
+        delay: letters2.duration - 800,
+        duration: 800,
+        elasticity: 300
+    });
+}
+
 
 var  animateMove = (piece) => {
     anime({
@@ -37,8 +127,8 @@ var  animateMove = (piece) => {
         duration: 60
     })
 }
-
-
+logoAnimation();
+//checkersAnimation();
 
 //arrays to store the instances
 var pieces = [];
@@ -57,7 +147,6 @@ class Tile {
             for (let k of pieces)
                 if (k.position[0] == this.position[0] && k.position[1] == this.position[1])
                     return 'wrong'; // same spot
-
             if (!piece.king && piece.player == 2 && this.position[0] < piece.position[0])
                 return 'wrong';
             if (!piece.king && piece.player == 1 && this.position[0] > piece.position[0])
@@ -88,7 +177,7 @@ class Piece {
             this.element.css("backgroundImage", "url('../img/king" + this.player + ".png')");
             this.king = true;
         };
-        this.move = (tile) => {
+        this.move = (tile, capture_count) => {
             this.element.removeClass('selected');
             if (!checkerBoard.isValidPlaceToMove(tile.position[0], tile.position[1]))
                 return false;
@@ -100,36 +189,38 @@ class Piece {
                 if (tile.position[0] > this.position[0])
                     return false;
             }
-            // Object.values(checkerBoard.gameBoard[this.position[0]][this.position[1]])[0] = '.';
-            Object.values(checkerBoard.gameBoard[tile.position[0]][tile.position[1]])[0] = this.player;
-
             Object.keys(checkerBoard.gameBoard[this.position[0]][this.position[1]]).forEach((key, index) => {
                 checkerBoard.gameBoard[this.position[0]][this.position[1]][key] = '.';
             });
             Object.keys(checkerBoard.gameBoard[tile.position[0]][tile.position[1]]).forEach((key, index) => {
                 checkerBoard.gameBoard[tile.position[0]][tile.position[1]][key] = this.player;
             });
-
-
-
             this.position = [tile.position[0], tile.position[1]];
-            //change the css using board's dictionary
             this.element.css('top', checkerBoard.dictionary[this.position[0]]);
             this.element.css('left', checkerBoard.dictionary[this.position[1]]);
-            //if piece reaches the end of the row on opposite side crown it a king (can move all directions)
+
             if (!this.king && (this.position[0] == 0 || this.position[0] == 7))
                 this.makeKing();
 
             return true;
         };
         this.remove = () => {
+            // this.element.css("display", "none");
+            console.log(this.element[0]);
+            anime({
+                targets: this.element[0],
+                translateY: 300,
+                scale: 2
+            });
             this.element.css("display", "none");
             if (this.player == 1)
                 checkerBoard.score.player2 += 1;
             if (this.player == 2)
                 checkerBoard.score.player1 += 1;
             // checkerBoard.gameBoard[this.position[0]][this.position[1]] = 0;
-            Object.values(checkerBoard.gameBoard[this.position[0]][this.position[1]])[0] = '.';
+            Object.keys(checkerBoard.gameBoard[this.position[0]][this.position[1]]).forEach((key) => {
+                gameBoard[this.position[0]][this.position[1]][key] = '.';
+            })
             this.position = [];
             var playerWon = checkerBoard.checkIfAnybodyWon();
             if (playerWon)
@@ -158,7 +249,9 @@ class Piece {
             if (tileToCheckx > 7 || tileToChecky > 7 || tileToCheckx < 0 || tileToChecky < 0)
                 return false;
             //if there is a piece there and there is no piece in the space after that
-            if (!checkerBoard.isValidPlaceToMove(tileToChecky, tileToCheckx) && checkerBoard.isValidPlaceToMove(newPosition[0], newPosition[1])) {
+            // if (!checkerBoard.isValidPlaceToMove(tileToChecky, tileToCheckx) && checkerBoard.isValidPlaceToMove(newPosition[0], newPosition[1])) {
+            if (checkerBoard.isValidPlaceToMove(newPosition[0], newPosition[1])) {
+
                 //find which object instance is sitting there
                 for (let pieceIndex in pieces) {
                     if (pieces[pieceIndex].position[0] == tileToChecky && pieces[pieceIndex].position[1] == tileToCheckx) {
@@ -286,7 +379,7 @@ class Board {
                     var found = false
                     for (let k of pieces) {
                         if (k.position[0] == i && k.position[1] == j) {
-                            if (k.king) ret += (Object.values(this.gameBoard[i][j]) + 2)
+                            if (k.king) ret += (Object.values(this.gameBoard[i][j]))
                             else ret += Object.values(this.gameBoard[i][j])
                             found = true
                             break
@@ -297,7 +390,7 @@ class Board {
             }
             return ret
         }
-    }     
+    }
 }
 
 class AIObject {
@@ -331,9 +424,15 @@ class AIObject {
             }
             return {};
         }
-        this.getTile = (move, checkerBoard) => {
-            const tileRow = move[16];
-            const tileColumn = move[19];
+        this.getTile = (move, checkerBoard, capture_count) => {
+            let tileRow, tileColumn;
+            if (capture_count > 1) {
+                tileRow = move[44];
+                tileColumn = move[47];
+            } else {
+                tileRow = move[16];
+                tileColumn = move[19];
+            }
             const tileID = Object.keys(checkerBoard.gameBoard[tileRow][tileColumn])[0];
             const tileToMoveTo = $('#tile'+tileID);
             return tileToMoveTo;
@@ -412,13 +511,6 @@ $('.tile').on("click", async (elem) => {
                     pieceSelected.move(tile);
                     animateMove(pieceSelected.element[0]);
                     successfulMove = true;
-
-                    Object.keys(gameBoard[tile.position[0]][tile.position[1]]).forEach((key, index) => {
-                        gameBoard[tile.position[0]][tile.position[1]][key] = 1;
-                    });
-                    Object.keys(gameBoard[originalPosition[0]][originalPosition[1]]).forEach((key, index) => {
-                        gameBoard[originalPosition[0]][originalPosition[1]][key] = '.';
-                    });
                     checkerBoard.changePlayerTurn();
                 } else 
                     console.log("You must jump when possible");
@@ -426,50 +518,44 @@ $('.tile').on("click", async (elem) => {
         }
     }
 
-    if (successfulMove) {
+    if (successfulMove && !checkerBoard.continuousJump) {
         let action_str;
-        // if (originalPosition[0] - pieceSelected.position[0] > 1)
-        //     action_str = `from (${originalPosition[0]+', '+originalPosition[1]}) to (${pieceSelected.position[0]+', '+pieceSelected.position[1]}) capturing ()`;
-        // else
         action_str = `from (${originalPosition[0]+', '+originalPosition[1]}) to (${pieceSelected.position[0]+', '+pieceSelected.position[1]})`;
 
         const nextMove = await checkerBoard.ai.getMove(action_str);
+        var capture_count = (nextMove.data.match(/capturing/g) || []).length;
         const computersPiece = checkerBoard.ai.getPiece(nextMove.data, checkerBoard);
-        const tileElement = checkerBoard.ai.getTile(nextMove.data, checkerBoard);
+        const tileElement = checkerBoard.ai.getTile(nextMove.data, checkerBoard, capture_count);
         const destinationTile = tiles[tileElement[0].id.replace(/tile/, '')];
-        let capturedPiece;
 
-        console.log(nextMove);
-
-        Object.keys(gameBoard[computersPiece.position[0]][computersPiece.position[1]]).forEach((key, index) => {
-            gameBoard[computersPiece.position[0]][computersPiece.position[1]][key] = '.';
-        });
-        computersPiece.move(destinationTile);
+        computersPiece.move(destinationTile, capture_count);
         animateMove(computersPiece.element[0]);
 
-        Object.keys(gameBoard[computersPiece.position[0]][computersPiece.position[1]]).forEach((key, index) => {
-            if (checkerBoard.playerTurn == 1)
-                gameBoard[computersPiece.position[0]][computersPiece.position[1]][key] = 1;
-            else
-                gameBoard[computersPiece.position[0]][computersPiece.position[1]][key] = 2;
-        });
-        let capture_bool = nextMove.data.length > 21;
-        if (capture_bool) {
-            let row = nextMove.data[33];
-            let col = nextMove.data[36];
-            capturedPiece = [row,col];
-            console.log(capturedPiece);
+        if (capture_count == 1) {
+            let capturedPiece = [nextMove.data[33], nextMove.data[36]];
             for (let piece of pieces) {
                 if (piece.position.toString() == capturedPiece.toString()) {
-                    console.log(piece);
                     Object.keys(gameBoard[piece.position[0]][piece.position[1]]).forEach((key, index) => {
                         gameBoard[piece.position[0]][piece.position[1]][key] = '.';
                     });
                     piece.remove();
                 }
             }
+        } else if (capture_count > 1) {
+            let capturedPieces = [[nextMove.data[33], nextMove.data[36]], [nextMove.data[61], nextMove.data[64]]];
+            for (_piece of capturedPieces) {
+                for (let piece of pieces) {
+                    if (piece.position.toString() == _piece.toString()) {
+                        Object.keys(gameBoard[piece.position[0]][piece.position[1]]).forEach((key, index) => {
+                            gameBoard[piece.position[0]][piece.position[1]][key] = '.';
+                        });
+                        piece.remove();
+                    }
+                }
+            }
         }
         checkerBoard.changePlayerTurn();
+        console.log(nextMove);
         console.log(checkerBoard);
         console.log(checkerBoard.visualizeString(checkerBoard.boardToString()))
     }
